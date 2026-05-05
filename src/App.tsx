@@ -113,28 +113,28 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-        <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white">
-            <Plus className="w-6 h-6 text-white" />
+    <div className="space-y-4">
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
+            <Plus className="w-4 h-4" />
           </div>
-          Performance Record
+          Add Record
         </h3>
         
         {students.length === 0 ? (
           <div className="p-4 bg-slate-50 rounded-xl text-center border-2 border-dashed border-slate-200">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-loose">
-              No students in registry.<br/>Add a student to start encoding.
+            <p className="text-xs font-medium text-slate-400">
+              Add a student first to encode grades.
             </p>
           </div>
         ) : (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Student Name</label>
+                <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Student</label>
                 <select 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   value={selectedStudent}
                   onChange={(e) => setSelectedStudent(e.target.value)}
                 >
@@ -142,9 +142,9 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Academic Subject</label>
+                <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Subject</label>
                 <select 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
                 >
@@ -153,22 +153,22 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Points Earned</label>
+                <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Score</label>
                 <input 
                   type="number" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   value={score}
                   onChange={(e) => setScore(e.target.value)}
                   placeholder="0"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Points</label>
+                <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Max Score</label>
                 <input 
                   type="number" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   value={maxScore}
                   onChange={(e) => setMaxScore(e.target.value)}
                 />
@@ -176,7 +176,7 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Academic Category</label>
+              <label className="block text-[10px] font-semibold text-slate-500 mb-2">Category</label>
               <div className="flex gap-2">
                 {(['written', 'performance', 'exam'] as const).map(c => (
                   <button
@@ -186,32 +186,32 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                       setCustomType(CATEGORY_MAP[c].types[0]);
                     }}
                     className={cn(
-                      "flex-1 py-3 px-2 text-[10px] font-black rounded-xl uppercase tracking-tighter transition-all leading-tight text-center",
-                      category === c ? "bg-slate-900 text-white shadow-lg" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                      "flex-1 py-2 px-2 text-[10px] font-semibold rounded-lg transition-all text-center",
+                      category === c ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     )}
                   >
-                    {CATEGORY_MAP[c].label}
+                    {c === 'written' ? 'Written' : c === 'performance' ? 'Performance' : 'Exam'}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Item Label / Type</label>
+              <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Type</label>
               <div className="flex gap-2">
                 <select 
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   value={customType}
                   onChange={(e) => setCustomType(e.target.value)}
                 >
                   {CATEGORY_MAP[category].types.map(t => <option key={t} value={t}>{t}</option>)}
-                  <option value="custom">-- Custom Label --</option>
+                  <option value="custom">Custom...</option>
                 </select>
                 {(customType === 'custom' || !CATEGORY_MAP[category].types.includes(customType)) && (
                   <input 
                     type="text"
-                    placeholder="Enter custom label..."
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="Custom..."
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                     value={customType === 'custom' ? '' : customType}
                     onChange={(e) => setCustomType(e.target.value)}
                   />
@@ -234,48 +234,48 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                 });
                 setScore('');
               }}
-              className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-100 transition-all active:scale-95 focus:ring-4 focus:ring-emerald-100"
+              className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm"
             >
-              Post Progress Record
+              Add Grade
             </button>
           </div>
         )}
       </div>
 
-      <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-        <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-            <MessageSquare className="w-6 h-6 text-white" />
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+            <MessageSquare className="w-4 h-4" />
           </div>
-          Teacher's Journal
+          Send Feedback
         </h3>
-        <div className="flex items-center justify-between mb-4">
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Analysis</label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-[10px] font-semibold text-slate-500">Quick Notes</label>
           <button 
             onClick={() => {
               const student = students.find(s => s.id === selectedStudent);
               const msg = student 
-                ? `Based on recent indicators, ${student.name.split(' ')[0]} is showing strong ${category} competencies but could benefit from more consistent review sessions. Overall engagement in ${subjects.find(s => s.id === selectedSubject)?.name || 'class'} remains stable.`
-                : "Please select a student to analyze.";
+                ? `Based on recent indicators, ${student.name.split(' ')[0]} is showing strong ${category} competencies but could benefit from more consistent review sessions.`
+                : "Select a student first.";
               setFeedbackText(msg);
             }}
-            className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[9px] font-black uppercase tracking-tight hover:bg-emerald-200 transition-colors"
+            className="flex items-center gap-1.5 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[9px] font-semibold hover:bg-emerald-200 transition-colors"
           >
-            <Sparkles className="w-3 h-3" /> AI Analyze Student
+            <Sparkles className="w-3 h-3" /> AI Assist
           </button>
         </div>
         <textarea 
-          className="w-full h-24 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none resize-none mb-4"
-          placeholder="Write a personalized note for the parents..."
+          className="w-full h-20 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none resize-none mb-3"
+          placeholder="Write a note for parents..."
           value={feedbackText}
           onChange={(e) => setFeedbackText(e.target.value)}
         />
-        <div className="grid grid-cols-2 gap-2 mb-6">
+        <div className="grid grid-cols-2 gap-2 mb-3">
           {QUICK_TEMPLATES.map(tmp => (
             <button 
               key={tmp.text}
               onClick={() => setFeedbackText(tmp.text)}
-              className="text-left px-3 py-2 text-[10px] font-bold bg-slate-100 text-slate-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all uppercase tracking-tighter"
+              className="text-left px-3 py-1.5 text-[10px] font-medium bg-slate-100 text-slate-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
             >
               {tmp.text}
             </button>
@@ -294,9 +294,9 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
             });
             setFeedbackText('');
           }}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-100 transition-all active:scale-95"
+          className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all text-sm"
         >
-          Send Feedback to Home
+          Send Feedback
         </button>
       </div>
     </div>
@@ -866,9 +866,9 @@ export default function App() {
               className="grid grid-cols-1 lg:grid-cols-4 gap-8"
             >
               {/* Sidebar for Teachers */}
-              <div className="lg:col-span-1 space-y-6">
-                <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-                  <div className="p-4 border-b border-slate-50 flex items-center gap-3">
+              <div className="lg:col-span-1 space-y-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-100">
                       <Award className="w-6 h-6" />
                     </div>
@@ -877,73 +877,83 @@ export default function App() {
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">S.Y. 2025-2026</p>
                     </div>
                   </div>
-                  <div className="p-2 space-y-1">
+                  <nav className="space-y-1">
                     {[
                       { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
                       { id: 'classes', icon: Users, label: 'My Classes' },
-                      { id: 'curriculum', icon: BookOpen, label: 'Curriculum' }
+                      { id: 'curriculum', icon: BookOpen, label: 'Curriculum' },
+                      { id: 'feedback', icon: MessageSquare, label: 'Feedback' }
                     ].map(item => (
                       <button 
                         key={item.id}
                         onClick={() => setActiveTeacherTab(item.id)}
                         className={cn(
-                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm outline-none",
+                          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold transition-all text-sm",
                           activeTeacherTab === item.id 
-                            ? "bg-slate-900 text-white shadow-xl shadow-slate-100" 
-                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                            ? "bg-slate-900 text-white" 
+                            : "text-slate-600 hover:bg-slate-100"
                         )}
                       >
-                        <item.icon className="w-5 h-5" /> {item.label}
+                        <item.icon className="w-4 h-4" /> {item.label}
                       </button>
                     ))}
+                  </nav>
+                </div>
+
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl text-white shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quick Stats</p>
+                    <TrendingUp className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/10 rounded-xl p-3">
+                      <p className="text-2xl font-black">{students.length}</p>
+                      <p className="text-[9px] text-slate-400 uppercase">Students</p>
+                    </div>
+                    <div className="bg-white/10 rounded-xl p-3">
+                      <p className="text-2xl font-black">{grades.length}</p>
+                      <p className="text-[9px] text-slate-400 uppercase">Records</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Communication</p>
-                   <button 
-                     onClick={() => setActiveTeacherTab('feedback')}
-                     className={cn(
-                       "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm outline-none",
-                       activeTeacherTab === 'feedback' ? "bg-emerald-50 text-emerald-700 border-l-4 border-emerald-600" : "text-slate-600 hover:bg-slate-100"
-                     )}
-                   >
-                     <MessageSquare className="w-5 h-5" /> Home Feedback
-                   </button>
-                </div>
-
-                <div className="bg-emerald-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-100 relative overflow-hidden group">
-                   <Target className="absolute -right-8 -bottom-8 w-32 h-32 text-white/10 group-hover:scale-110 transition-transform duration-700" />
-                   <p className="text-[10px] font-black uppercase tracking-widest text-emerald-100 mb-2">Class Health</p>
-                   <h4 className="text-3xl font-black mb-1">{students.length > 0 ? '94%' : '0%'}</h4>
-                   <p className="text-[10px] font-bold text-emerald-200">Participation Rate</p>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Quick Actions</p>
+                  <div className="space-y-2">
+                    <button 
+                      onClick={() => setNewStudentName('')}
+                      className="w-full flex items-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold hover:bg-indigo-100 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" /> Add Student
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Central Area: Content based on active tab */}
-              <div className="lg:col-span-3 space-y-8">
-                <header className="flex justify-between items-end">
+              <div className="lg:col-span-3 space-y-6">
+                <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <div>
-                    <h1 className="text-3xl font-black text-slate-900">
+                    <h1 className="text-2xl font-bold text-slate-900">
                       {activeTeacherTab === 'dashboard' ? 'Performance Dashboard' : 
                        activeTeacherTab === 'classes' ? 'My Classes / Grade 8 • St. Jude' :
                        activeTeacherTab === 'curriculum' ? 'Academic Curriculum' : 
                        'Parent Communication Hub'}
                     </h1>
-                    <p className="text-slate-500 font-medium">
+                    <p className="text-sm text-slate-500">
                       {activeTeacherTab === 'dashboard' ? 'Real-time Class Performance Monitoring' : 
                        activeTeacherTab === 'classes' ? 'Standard Student List & Registry' :
                        activeTeacherTab === 'curriculum' ? 'Subject & Material Management' : 
                        'Managing School-Home Partnership'}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button className="p-2 bg-white rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm transition-transform active:scale-90">
-                      <Filter className="w-5 h-5" />
-                    </button>
-                    <button className="px-4 py-2 bg-white rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 shadow-sm flex items-center gap-2 transition-transform active:scale-95">
-                      <Calendar className="w-4 h-4" /> Period 1
-                    </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-500">Period:</span>
+                    <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
+                      <option>Period 1</option>
+                      <option>Period 2</option>
+                      <option>Period 3</option>
+                    </select>
                   </div>
                 </header>
 
@@ -954,33 +964,34 @@ export default function App() {
                       <div className="space-y-8">
                         {/* Stats Overview */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="bg-slate-900 px-8 py-10 rounded-3xl text-white shadow-2xl relative overflow-hidden group">
-                            <div className="absolute right-[-10%] top-[-10%] opacity-10 group-hover:scale-110 transition-transform duration-700">
-                               <Users className="w-40 h-40" />
+                          <div className="bg-slate-900 p-6 rounded-2xl text-white shadow-lg relative overflow-hidden">
+                            <div className="flex items-center justify-between mb-4">
+                              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Students</p>
+                              <Users className="w-5 h-5 text-slate-600" />
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Authenticated Students</p>
-                            <h3 className="text-4xl font-black">{students.length}</h3>
-                            <div className="mt-8 flex items-center gap-2 text-emerald-400 text-xs font-bold">
-                              <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> {students.length > 0 ? 'ALL PARENTS CONNECTED' : 'WAITING FOR ENROLLMENT'}
-                            </div>
+                            <h3 className="text-3xl font-black">{students.length}</h3>
+                            <p className="text-xs text-emerald-400 mt-2 font-medium">
+                              {students.length > 0 ? 'Active Enrollment' : 'No Students Yet'}
+                            </p>
                           </div>
-                          <div className="bg-emerald-600 px-8 py-10 rounded-3xl text-white shadow-xl shadow-emerald-100 relative overflow-hidden group">
-                            <div className="absolute right-[-10%] top-[-10%] opacity-10 group-hover:scale-110 transition-transform duration-700">
-                               <Target className="w-40 h-40" />
+                          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl text-white shadow-lg relative overflow-hidden">
+                            <div className="flex items-center justify-between mb-4">
+                              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Class Average</p>
+                              <Target className="w-5 h-5 text-emerald-300" />
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-100 mb-2">Class Completion</p>
-                            <h3 className="text-4xl font-black">{students.length > 0 ? '94%' : '0%'}</h3>
-                            <div className="mt-8 flex items-center gap-2 text-emerald-100 text-xs font-bold">
-                              <TrendingUp className="w-4 h-4" /> {students.length > 0 ? 'STABLE ENGAGEMENT' : 'INITIALIZING PERIOD'}
-                            </div>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Class Average</p>
+                            <h3 className="text-3xl font-black">{students.length > 0 ? '88%' : '0%'}</h3>
+                            <p className="text-xs text-emerald-200 mt-2 font-medium">
+                              {students.length > 0 ? 'Performance Score' : 'Add grades to see'}
+                            </p>
                           </div>
                         </div>
 
                         {/* Student Performance Table */}
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h3 className="font-bold text-slate-800">Class Performance Overview</h3>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Updates</span>
+                            <h3 className="font-semibold text-slate-800">Class Performance</h3>
+                            <span className="text-[10px] font-medium text-slate-400">{students.length} students</span>
                           </div>
                           
                           {students.length === 0 ? (
@@ -1082,26 +1093,30 @@ export default function App() {
                   </div>
 
                   {/* Right Column: Interactive Panels */}
-                  <div className="w-full lg:w-[320px] flex-shrink-0 space-y-6">
-                    {/* New Student Registration */}
-                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                      <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-indigo-600" />
-                        Student Registry
-                      </h3>
+                  <div className="w-full lg:w-[340px] flex-shrink-0 space-y-4">
+                    {/* Student Registry */}
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                          <Users className="w-4 h-4 text-indigo-600" />
+                          Student Registry
+                        </h3>
+                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{students.length}</span>
+                      </div>
                       <div className="flex gap-2">
                         <input 
                           type="text" 
-                          placeholder="New student name..."
-                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500"
+                          placeholder="Add student name..."
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500"
                           value={newStudentName}
                           onChange={(e) => setNewStudentName(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddStudent()}
                         />
                         <button 
                           onClick={handleAddStudent}
-                          className="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition-colors"
+                          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-semibold text-sm"
                         >
-                          <Plus className="w-5 h-5" />
+                          Add
                         </button>
                       </div>
                     </div>
@@ -1113,10 +1128,14 @@ export default function App() {
                       onAddFeedback={handleAddFeedback}
                     />
 
-                    <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 flex items-start gap-4">
-                       <Info className="w-5 h-5 text-emerald-600 mt-1 flex-shrink-0" />
-                       <div className="text-[11px] leading-relaxed text-emerald-800 font-medium">
-                         <strong>System Tip:</strong> Encouraging parents about small wins significantly boosts student morale. Use the Feedback module to send positive notes.
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                       <div className="flex items-start gap-3">
+                         <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                           <Info className="w-4 h-4 text-blue-600" />
+                         </div>
+                         <div className="text-[11px] leading-relaxed text-slate-600">
+                           <strong className="text-slate-900">Tip:</strong> Regular feedback strengthens school-home partnership.
+                         </div>
                        </div>
                     </div>
                   </div>
