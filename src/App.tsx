@@ -100,6 +100,7 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
   const [category, setCategory] = useState<'written' | 'performance' | 'exam'>('written');
   const [customType, setCustomType] = useState('Quiz 1');
   const [feedbackText, setFeedbackText] = useState('');
+  const [gradeDate, setGradeDate] = useState(new Date().toISOString().split('T')[0]);
 
   React.useEffect(() => {
     if (!selectedStudent && students.length > 0) {
@@ -227,6 +228,16 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
               </div>
             </div>
 
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-500 mb-1.5">Date</label>
+              <input 
+                type="date" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                value={gradeDate}
+                onChange={(e) => setGradeDate(e.target.value)}
+              />
+            </div>
+
             <button 
               onClick={() => {
                 if (!score || !selectedStudent) return;
@@ -238,9 +249,10 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                   maxScore: Number(maxScore),
                   category,
                   type: customType === 'custom' ? 'Task' : customType,
-                  date: new Date().toISOString().split('T')[0]
+                  date: gradeDate
                 });
                 setScore('');
+                setGradeDate(new Date().toISOString().split('T')[0]);
               }}
               className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm"
             >
