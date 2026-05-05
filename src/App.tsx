@@ -41,25 +41,6 @@ const getStatusLabel = (average: number) => {
   return 'Needs Improvement';
 };
 
-// --- LocalStorage Helpers ---
-
-const loadFromStorage = <T,>(key: string, fallback: T): T => {
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const saveToStorage = <T,>(key: string, value: T) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    console.warn('Failed to save to localStorage', e);
-  }
-};
-
 // --- Sub-components ---
 
 const StatCard = ({ title, value, icon: Icon, colorClass }: any) => (
@@ -278,34 +259,16 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
 // --- Main Application ---
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => loadFromStorage('gabay_isAuth', false));
-  const [role, setRole] = useState<Role>(() => loadFromStorage('gabay_role', 'parent'));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState<Role>('parent');
   const [activeTeacherTab, setActiveTeacherTab] = useState('dashboard');
-  const [students, setStudents] = useState<Student[]>(() => {
-    const stored = loadFromStorage<Student[]>('gabay_students', []);
-    return stored.length > 0 ? stored : MOCK_STUDENTS;
-  });
-  const [grades, setGrades] = useState<GradeEntry[]>(() => {
-    const stored = loadFromStorage<GradeEntry[]>('gabay_grades', []);
-    return stored.length > 0 ? stored : MOCK_GRADES;
-  });
-  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => {
-    const stored = loadFromStorage<TeacherFeedback[]>('gabay_feedback', []);
-    return stored.length > 0 ? stored : MOCK_FEEDBACK;
-  });
-  const [alerts, setAlerts] = useState<Alert[]>(() => {
-    const stored = loadFromStorage<Alert[]>('gabay_alerts', []);
-    return stored.length > 0 ? stored : MOCK_ALERTS;
-  });
-  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(() => {
-    const stored = loadFromStorage<string[]>('gabay_acknowledged', []);
-    return new Set(stored);
-  });
+  const [grades, setGrades] = useState<GradeEntry[]>(MOCK_GRADES);
+  const [feedback, setFeedback] = useState<TeacherFeedback[]>(MOCK_FEEDBACK);
+  const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
+  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(new Set());
   const [isExpandingStudents, setIsExpandingStudents] = useState(false);
-  const [newStudentName, setNewStudentName] = useState('');
-  const [successModal, setSuccessModal] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
-  const currentUserStudent = students[0] || { id: 'none', name: 'No Student Added', parentId: 'none', classId: 'none' };
+  const currentUserStudent = MOCK_STUDENTS.find(s => s.id === 's1')!;
   
   const studentGrades = useMemo(() => 
     grades.filter(g => g.studentId === currentUserStudent.id), 
@@ -325,100 +288,56 @@ export default function App() {
     });
   }, [studentGrades]);
 
-  const handleAddStudent = () => {
-    if (!newStudentName.trim()) return;
-    const newStudent: Student = {
-      id: `s-${Date.now()}`,
-      name: newStudentName,
-      parentId: `p-${Date.now()}`,
-      classId: 'c1'
-    };
-    setStudents(prev => {
-      const updated = [...prev, newStudent];
-      saveToStorage('gabay_students', updated);
-      return updated;
-    });
-    setNewStudentName('');
-    setSuccessModal({ show: true, message: `${newStudent.name} has been added to the class registry.` });
-  };
+  const stats = useMemo(() => {
+    const totalAvg = Math.round(studentAverages.reduce((a, b) => a + b.average, 0) / studentAverages.length);
+    const growth = 2; // Fixed for demo
+    return { totalAvg, growth };
+  }, [studentAverages]);
 
   const handleAddGrade = (newGrade: GradeEntry) => {
-    setGrades(prev => {
-      const updated = [...prev, newGrade];
-      saveToStorage('gabay_grades', updated);
-      return updated;
-    });
-    setSuccessModal({ show: true, message: `Grade record has been posted successfully.` });
+    setGrades(prev => [...prev, newGrade]);
     
+    // Intelligent Risk Detection (Light AI Logic)
     const subGrades = grades.filter(g => g.studentId === newGrade.studentId && g.subjectId === newGrade.subjectId);
     if (subGrades.length > 0) {
       const prevAvg = calculateAverage(subGrades);
       const newScorePercent = (newGrade.score / newGrade.maxScore) * 100;
       
       if (newScorePercent < prevAvg - 10) {
-        setAlerts(prev => {
-          const updated = [{
-            id: Date.now().toString(),
-            studentId: newGrade.studentId,
-            title: 'Curriculum Support Opportunity',
-            message: `Noticeable variance in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
-            type: 'decline',
-            date: new Date().toISOString().split('T')[0],
-            isRead: false
-          }, ...prev];
-          saveToStorage('gabay_alerts', updated);
-          return updated;
-        });
+        setAlerts(prev => [{
+          id: Date.now().toString(),
+          studentId: newGrade.studentId,
+          title: 'Curriculum Support Opportunity',
+          message: `Noticeable variance in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
+          type: 'decline',
+          date: new Date().toISOString().split('T')[0],
+          isRead: false
+        }, ...prev]);
       } else if (newScorePercent > prevAvg + 5) {
-        setAlerts(prev => {
-          const updated = [{
-            id: Date.now().toString(),
-            studentId: newGrade.studentId,
-            title: 'Celebration Moment',
-            message: `Exceptional progress recorded in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
-            type: 'improvement',
-            date: new Date().toISOString().split('T')[0],
-            isRead: false
-          }, ...prev];
-          saveToStorage('gabay_alerts', updated);
-          return updated;
-        });
+        setAlerts(prev => [{
+          id: Date.now().toString(),
+          studentId: newGrade.studentId,
+          title: 'Celebration Moment',
+          message: `Exceptional progress recorded in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
+          type: 'improvement',
+          date: new Date().toISOString().split('T')[0],
+          isRead: false
+        }, ...prev]);
       }
     }
   };
 
   const handleAddFeedback = (newFb: TeacherFeedback) => {
-    setFeedback(prev => {
-      const updated = [newFb, ...prev];
-      saveToStorage('gabay_feedback', updated);
-      return updated;
-    });
-    setSuccessModal({ show: true, message: 'Feedback has been sent to the parent successfully.' });
+    setFeedback(prev => [newFb, ...prev]);
   };
 
   const handleMarkAlertRead = (alertId: string) => {
-    setAlerts(prev => {
-      const updated = prev.map(a => a.id === alertId ? { ...a, isRead: true } : a);
-      saveToStorage('gabay_alerts', updated);
-      return updated;
-    });
-    setSuccessModal({ show: true, message: 'Insight has been dismissed.' });
+    setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, isRead: true } : a));
   };
 
   const handleAcknowledgeFeedback = (id: string) => {
-    setAcknowledgedFeedbackIds(prev => {
-      const updated = new Set([...prev, id]);
-      saveToStorage('gabay_acknowledged', Array.from(updated));
-      return updated;
-    });
-    setSuccessModal({ show: true, message: 'Feedback acknowledged successfully.' });
+    setAcknowledgedFeedbackIds(prev => new Set([...prev, id]));
   };
-
-  const stats = useMemo(() => {
-    const totalAvg = Math.round(studentAverages.reduce((a, b) => a + b.average, 0) / studentAverages.length);
-    const growth = 2; // Fixed for demo
-    return { totalAvg, growth };
-  }, [studentAverages]);
 
   const [detailedSubjectId, setDetailedSubjectId] = useState<string | null>(null);
 
@@ -428,77 +347,82 @@ export default function App() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-sm bg-white rounded-3xl border border-slate-200 shadow-xl p-8"
+          className="w-full max-w-md bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-10 overflow-hidden relative"
         >
+          <div className="absolute top-0 left-0 w-full h-2 bg-emerald-600" />
           
           <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-14 h-14 bg-emerald-600 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
-              <BookOpen className="text-white w-7 h-7" />
+            <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-emerald-100">
+              <BookOpen className="text-white w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">GabayAral</h1>
-            <p className="text-xs text-slate-400">Academic Monitoring Portal</p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-2">GabayAral</h1>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Academic Monitoring Portal</p>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div>
-              <p className="text-[10px] font-medium text-slate-500 mb-3 text-center">Select your role</p>
-              <div className="grid grid-cols-2 gap-3">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 text-center">Select your role to continue</p>
+              <div className="grid grid-cols-2 gap-4">
                 <button 
-                  onClick={() => { setRole('teacher'); saveToStorage('gabay_role', 'teacher'); }}
+                  onClick={() => setRole('teacher')}
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                    role === 'teacher' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"
+                    "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
+                    role === 'teacher' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
                   )}
                 >
-                  <Award className="w-6 h-6" />
-                  <span className="text-xs font-semibold">Teacher</span>
+                  <Award className="w-8 h-8" />
+                  <span className="text-xs font-black uppercase tracking-tighter">Teacher</span>
                 </button>
                 <button 
-                  onClick={() => { setRole('parent'); saveToStorage('gabay_role', 'parent'); }}
+                  onClick={() => setRole('parent')}
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                    role === 'parent' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"
+                    "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
+                    role === 'parent' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
                   )}
                 >
-                  <User className="w-6 h-6" />
-                  <span className="text-xs font-semibold">Parent</span>
+                  <User className="w-8 h-8" />
+                  <span className="text-xs font-black uppercase tracking-tighter">Parent</span>
                 </button>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="w-4 h-4 text-slate-400" />
+            <div className="space-y-4">
+              <div className="group relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User className="w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
                 </div>
                 <input 
                   type="text" 
-                  placeholder={role === 'teacher' ? "Teacher ID" : "Parent Code"}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  placeholder={role === 'teacher' ? "Teacher ID (e.g., T-2026)" : "Parent Access Code"}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                 />
               </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Settings className="w-4 h-4 text-slate-400" />
+              <div className="group relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Settings className="w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
                 </div>
                 <input 
                   type="password" 
                   placeholder="Password"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                 />
               </div>
             </div>
 
             <button 
-              onClick={() => { setIsAuthenticated(true); saveToStorage('gabay_isAuth', true); saveToStorage('gabay_role', role); setSuccessModal({ show: true, message: `Welcome to GabayAral! You've logged in as ${role}.` }); }}
-              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl shadow-lg transition-all active:scale-[0.98] text-sm"
+              onClick={() => setIsAuthenticated(true)}
+              className="w-full py-5 bg-slate-900 border-b-4 border-slate-950 hover:bg-black text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200 transition-all active:translate-y-1 active:border-b-0 text-xs"
             >
-              Sign In
+              Initialize {role === 'teacher' ? 'Faculty Portal' : 'Parental Dashboard'}
             </button>
             
-            <div className="pt-3 flex items-center justify-center gap-2">
-               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-               <p className="text-[10px] text-slate-400">AI-Powered Insights</p>
+            <div className="pt-4 flex flex-col items-center gap-2">
+               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Powered by Gemini AI Insights</p>
+               <div className="flex gap-1">
+                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse delay-75" />
+                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse delay-150" />
+               </div>
             </div>
           </div>
         </motion.div>
@@ -512,12 +436,12 @@ export default function App() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.03)] focus:outline-none">
         <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <BookOpen className="text-white w-5 h-5" />
+            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 transition-transform hover:scale-105">
+              <BookOpen className="text-white w-6 h-6" />
             </div>
             <div>
-              <span className="text-lg font-semibold text-slate-900">GabayAral</span>
-              <p className="text-[9px] text-emerald-600 font-medium">Academic Portal</p>
+              <span className="text-xl font-bold tracking-tight text-slate-900">GabayAral</span>
+              <p className="text-[10px] uppercase tracking-widest text-emerald-600 font-bold leading-none mt-1">Insightful Learning</p>
             </div>
           </div>
 
