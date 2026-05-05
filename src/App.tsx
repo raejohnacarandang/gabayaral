@@ -17,7 +17,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 import { MOCK_STUDENTS, MOCK_SUBJECTS, MOCK_GRADES, MOCK_FEEDBACK, MOCK_ALERTS } from './data';
 import { Role, GradeEntry, TeacherFeedback, Alert, Student } from './types';
-import { loadFromStorage, saveToStorage } from './lib/utils';
 
 // --- Dashboard Logic Helpers ---
 
@@ -42,126 +41,26 @@ const getStatusLabel = (average: number) => {
   return 'Needs Improvement';
 };
 
-// --- Sub-components ---
+// --- LocalStorage Helpers ---
 
-const SuccessModal = ({ message, onClose }: { message: string; onClose: () => void }) => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    onClick={onClose}
-  >
-    <motion.div 
-      initial={{ scale: 0.8, y: 20 }}
-      animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.8, y: 20 }}
-      className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
-      onClick={e => e.stopPropagation()}
-    >
-      <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-      </div>
-      <h3 className="text-xl font-black text-slate-900 mb-2">Success!</h3>
-      <p className="text-slate-600 font-medium mb-6">{message}</p>
-      <button 
-        onClick={onClose}
-        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all"
-      >
-        Continue
-      </button>
-    </motion.div>
-  </motion.div>
-);
-
-const ConfirmModal = ({ title, message, confirmText, onConfirm, onCancel }: { title: string; message: string; confirmText: string; onConfirm: () => void; onCancel: () => void }) => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    onClick={onCancel}
-  >
-    <motion.div 
-      initial={{ scale: 0.8, y: 20 }}
-      animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.8, y: 20 }}
-      className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
-      onClick={e => e.stopPropagation()}
-    >
-      <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <AlertCircle className="w-8 h-8 text-amber-600" />
-      </div>
-      <h3 className="text-xl font-black text-slate-900 mb-2">{title}</h3>
-      <p className="text-slate-600 font-medium mb-6">{message}</p>
-      <div className="flex gap-3">
-        <button 
-          onClick={onCancel}
-          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-all"
-        >
-          Cancel
-        </button>
-        <button 
-          onClick={onConfirm}
-          className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl transition-all"
-        >
-          {confirmText}
-        </button>
-      </div>
-    </motion.div>
-  </motion.div>
-);
-
-const AddStudentModal = ({ onAdd, onClose }: { onAdd: (name: string) => void; onClose: () => void }) => {
-  const [name, setName] = useState('');
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <motion.div 
-        initial={{ scale: 0.8, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.8, y: 20 }}
-        className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
-        onClick={e => e.stopPropagation()}
-      >
-        <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white">
-            <User className="w-6 h-6" />
-          </div>
-          Add New Student
-        </h3>
-        <input 
-          type="text"
-          placeholder="Enter student name"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none mb-4"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          autoFocus
-        />
-        <div className="flex gap-3">
-          <button 
-            onClick={onClose}
-            className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-all"
-          >
-            Cancel
-          </button>
-          <button 
-            onClick={() => name.trim() && onAdd(name.trim())}
-            disabled={!name.trim()}
-            className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all disabled:opacity-50"
-          >
-            Add Student
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
 };
+
+const saveToStorage = <T,>(key: string, value: T) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn('Failed to save to localStorage', e);
+  }
+};
+
+// --- Sub-components ---
 
 const StatCard = ({ title, value, icon: Icon, colorClass }: any) => (
   <div className="bg-white px-6 py-4 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md flex flex-col items-center">
@@ -180,7 +79,6 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
   const [category, setCategory] = useState<'written' | 'performance' | 'exam'>('written');
   const [customType, setCustomType] = useState('Quiz 1');
   const [feedbackText, setFeedbackText] = useState('');
-  const [customDate, setCustomDate] = useState(new Date().toISOString().split('T')[0]);
 
   const QUICK_TEMPLATES = [
     { text: 'Outstanding consistency!', sentiment: 'positive' as const },
@@ -294,16 +192,6 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
             </div>
           </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Date</label>
-            <input 
-              type="date" 
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
-              value={customDate}
-              onChange={(e) => setCustomDate(e.target.value)}
-            />
-          </div>
-
           <button 
             onClick={() => {
               if (!score) return;
@@ -315,7 +203,7 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                 maxScore: Number(maxScore),
                 category,
                 type: customType === 'custom' ? 'Task' : customType,
-                date: customDate
+                date: new Date().toISOString().split('T')[0]
               });
               setScore('');
             }}
@@ -390,19 +278,34 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
 // --- Main Application ---
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => loadFromStorage('isAuthenticated', false));
-  const [role, setRole] = useState<Role>(() => loadFromStorage('role', 'parent') as Role);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => loadFromStorage('gabay_isAuth', false));
+  const [role, setRole] = useState<Role>(() => loadFromStorage('gabay_role', 'parent'));
   const [activeTeacherTab, setActiveTeacherTab] = useState('dashboard');
-  const [students, setStudents] = useState<Student[]>(() => loadFromStorage('students', MOCK_STUDENTS));
-  const [grades, setGrades] = useState<GradeEntry[]>(() => loadFromStorage('grades', MOCK_GRADES));
-  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => loadFromStorage('feedback', MOCK_FEEDBACK));
-  const [alerts, setAlerts] = useState<Alert[]>(() => loadFromStorage('alerts', MOCK_ALERTS));
-  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(() => new Set(loadFromStorage('acknowledged', [] as string[])));
+  const [students, setStudents] = useState<Student[]>(() => {
+    const stored = loadFromStorage<Student[]>('gabay_students', []);
+    return stored.length > 0 ? stored : MOCK_STUDENTS;
+  });
+  const [grades, setGrades] = useState<GradeEntry[]>(() => {
+    const stored = loadFromStorage<GradeEntry[]>('gabay_grades', []);
+    return stored.length > 0 ? stored : MOCK_GRADES;
+  });
+  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => {
+    const stored = loadFromStorage<TeacherFeedback[]>('gabay_feedback', []);
+    return stored.length > 0 ? stored : MOCK_FEEDBACK;
+  });
+  const [alerts, setAlerts] = useState<Alert[]>(() => {
+    const stored = loadFromStorage<Alert[]>('gabay_alerts', []);
+    return stored.length > 0 ? stored : MOCK_ALERTS;
+  });
+  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(() => {
+    const stored = loadFromStorage<string[]>('gabay_acknowledged', []);
+    return new Set(stored);
+  });
   const [isExpandingStudents, setIsExpandingStudents] = useState(false);
+  const [newStudentName, setNewStudentName] = useState('');
   const [successModal, setSuccessModal] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
-  const [showAddStudent, setShowAddStudent] = useState(false);
 
-  const currentUserStudent = students.find(s => s.id === 's1') || students[0];
+  const currentUserStudent = students[0] || { id: 'none', name: 'No Student Added', parentId: 'none', classId: 'none' };
   
   const studentGrades = useMemo(() => 
     grades.filter(g => g.studentId === currentUserStudent.id), 
@@ -422,18 +325,30 @@ export default function App() {
     });
   }, [studentGrades]);
 
-  const stats = useMemo(() => {
-    const totalAvg = Math.round(studentAverages.reduce((a, b) => a + b.average, 0) / studentAverages.length);
-    const growth = 2; // Fixed for demo
-    return { totalAvg, growth };
-  }, [studentAverages]);
+  const handleAddStudent = () => {
+    if (!newStudentName.trim()) return;
+    const newStudent: Student = {
+      id: `s-${Date.now()}`,
+      name: newStudentName,
+      parentId: `p-${Date.now()}`,
+      classId: 'c1'
+    };
+    setStudents(prev => {
+      const updated = [...prev, newStudent];
+      saveToStorage('gabay_students', updated);
+      return updated;
+    });
+    setNewStudentName('');
+    setSuccessModal({ show: true, message: `${newStudent.name} has been added to the class registry.` });
+  };
 
   const handleAddGrade = (newGrade: GradeEntry) => {
     setGrades(prev => {
       const updated = [...prev, newGrade];
-      saveToStorage('grades', updated);
+      saveToStorage('gabay_grades', updated);
       return updated;
     });
+    setSuccessModal({ show: true, message: `Grade record has been posted successfully.` });
     
     const subGrades = grades.filter(g => g.studentId === newGrade.studentId && g.subjectId === newGrade.subjectId);
     if (subGrades.length > 0) {
@@ -441,85 +356,69 @@ export default function App() {
       const newScorePercent = (newGrade.score / newGrade.maxScore) * 100;
       
       if (newScorePercent < prevAvg - 10) {
-        const newAlert: Alert = {
-          id: Date.now().toString(),
-          studentId: newGrade.studentId,
-          title: 'Curriculum Support Opportunity',
-          message: `Noticeable variance in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
-          type: 'decline',
-          date: new Date().toISOString().split('T')[0],
-          isRead: false
-        };
         setAlerts(prev => {
-          const updated = [newAlert, ...prev];
-          saveToStorage('alerts', updated);
+          const updated = [{
+            id: Date.now().toString(),
+            studentId: newGrade.studentId,
+            title: 'Curriculum Support Opportunity',
+            message: `Noticeable variance in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
+            type: 'decline',
+            date: new Date().toISOString().split('T')[0],
+            isRead: false
+          }, ...prev];
+          saveToStorage('gabay_alerts', updated);
           return updated;
         });
       } else if (newScorePercent > prevAvg + 5) {
-        const newAlert: Alert = {
-          id: Date.now().toString(),
-          studentId: newGrade.studentId,
-          title: 'Celebration Moment',
-          message: `Exceptional progress recorded in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
-          type: 'improvement',
-          date: new Date().toISOString().split('T')[0],
-          isRead: false
-        };
         setAlerts(prev => {
-          const updated = [newAlert, ...prev];
-          saveToStorage('alerts', updated);
+          const updated = [{
+            id: Date.now().toString(),
+            studentId: newGrade.studentId,
+            title: 'Celebration Moment',
+            message: `Exceptional progress recorded in ${MOCK_SUBJECTS.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
+            type: 'improvement',
+            date: new Date().toISOString().split('T')[0],
+            isRead: false
+          }, ...prev];
+          saveToStorage('gabay_alerts', updated);
           return updated;
         });
       }
     }
-    setSuccessModal({ show: true, message: 'Grade posted successfully!' });
   };
 
   const handleAddFeedback = (newFb: TeacherFeedback) => {
     setFeedback(prev => {
       const updated = [newFb, ...prev];
-      saveToStorage('feedback', updated);
+      saveToStorage('gabay_feedback', updated);
       return updated;
     });
-    setSuccessModal({ show: true, message: 'Feedback sent to parent!' });
-  };
-
-  const handleAddStudent = (name: string) => {
-    const newStudent: Student = {
-      id: `s${Date.now()}`,
-      name,
-      parentId: 'pnew',
-      classId: 'c1'
-    };
-    setStudents(prev => {
-      const updated = [...prev, newStudent];
-      saveToStorage('students', updated);
-      return updated;
-    });
-    setSuccessModal({ show: true, message: 'Student added successfully!' });
-    setShowAddStudent(false);
+    setSuccessModal({ show: true, message: 'Feedback has been sent to the parent successfully.' });
   };
 
   const handleMarkAlertRead = (alertId: string) => {
     setAlerts(prev => {
       const updated = prev.map(a => a.id === alertId ? { ...a, isRead: true } : a);
-      saveToStorage('alerts', updated);
+      saveToStorage('gabay_alerts', updated);
       return updated;
     });
+    setSuccessModal({ show: true, message: 'Insight has been dismissed.' });
   };
 
   const handleAcknowledgeFeedback = (id: string) => {
     setAcknowledgedFeedbackIds(prev => {
       const updated = new Set([...prev, id]);
-      saveToStorage('acknowledged', Array.from(updated));
+      saveToStorage('gabay_acknowledged', Array.from(updated));
       return updated;
     });
+    setSuccessModal({ show: true, message: 'Feedback acknowledged successfully.' });
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    saveToStorage('isAuthenticated', false);
-  };
+  const stats = useMemo(() => {
+    const totalAvg = Math.round(studentAverages.reduce((a, b) => a + b.average, 0) / studentAverages.length);
+    const growth = 2; // Fixed for demo
+    return { totalAvg, growth };
+  }, [studentAverages]);
 
   const [detailedSubjectId, setDetailedSubjectId] = useState<string | null>(null);
 
@@ -529,86 +428,77 @@ export default function App() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-10 overflow-hidden relative"
+          className="w-full max-w-sm bg-white rounded-3xl border border-slate-200 shadow-xl p-8"
         >
-          <div className="absolute top-0 left-0 w-full h-2 bg-emerald-600" />
           
           <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-emerald-100">
-              <BookOpen className="text-white w-8 h-8" />
+            <div className="w-14 h-14 bg-emerald-600 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
+              <BookOpen className="text-white w-7 h-7" />
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-2">GabayAral</h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Academic Monitoring Portal</p>
+            <h1 className="text-2xl font-bold text-slate-900 mb-1">GabayAral</h1>
+            <p className="text-xs text-slate-400">Academic Monitoring Portal</p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 text-center">Select your role to continue</p>
-              <div className="grid grid-cols-2 gap-4">
+              <p className="text-[10px] font-medium text-slate-500 mb-3 text-center">Select your role</p>
+              <div className="grid grid-cols-2 gap-3">
                 <button 
-                  onClick={() => setRole('teacher')}
+                  onClick={() => { setRole('teacher'); saveToStorage('gabay_role', 'teacher'); }}
                   className={cn(
-                    "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
-                    role === 'teacher' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                    role === 'teacher' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"
                   )}
                 >
-                  <Award className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-tighter">Teacher</span>
+                  <Award className="w-6 h-6" />
+                  <span className="text-xs font-semibold">Teacher</span>
                 </button>
                 <button 
-                  onClick={() => setRole('parent')}
+                  onClick={() => { setRole('parent'); saveToStorage('gabay_role', 'parent'); }}
                   className={cn(
-                    "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
-                    role === 'parent' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                    role === 'parent' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300"
                   )}
                 >
-                  <User className="w-8 h-8" />
-                  <span className="text-xs font-black uppercase tracking-tighter">Parent</span>
+                  <User className="w-6 h-6" />
+                  <span className="text-xs font-semibold">Parent</span>
                 </button>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="group relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
+            <div className="space-y-3">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="w-4 h-4 text-slate-400" />
                 </div>
                 <input 
                   type="text" 
-                  placeholder={role === 'teacher' ? "Teacher ID (e.g., T-2026)" : "Parent Access Code"}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                  placeholder={role === 'teacher' ? "Teacher ID" : "Parent Code"}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 />
               </div>
-              <div className="group relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Settings className="w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Settings className="w-4 h-4 text-slate-400" />
                 </div>
                 <input 
                   type="password" 
                   placeholder="Password"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
             <button 
-              onClick={() => {
-                setIsAuthenticated(true);
-                saveToStorage('isAuthenticated', true);
-                saveToStorage('role', role);
-              }}
-              className="w-full py-5 bg-slate-900 border-b-4 border-slate-950 hover:bg-black text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200 transition-all active:translate-y-1 active:border-b-0 text-xs"
+              onClick={() => { setIsAuthenticated(true); saveToStorage('gabay_isAuth', true); saveToStorage('gabay_role', role); setSuccessModal({ show: true, message: `Welcome to GabayAral! You've logged in as ${role}.` }); }}
+              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl shadow-lg transition-all active:scale-[0.98] text-sm"
             >
-              Initialize {role === 'teacher' ? 'Faculty Portal' : 'Parental Dashboard'}
+              Sign In
             </button>
             
-            <div className="pt-4 flex flex-col items-center gap-2">
-               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Powered by Gemini AI Insights</p>
-               <div className="flex gap-1">
-                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse delay-75" />
-                 <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse delay-150" />
-               </div>
+            <div className="pt-3 flex items-center justify-center gap-2">
+               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+               <p className="text-[10px] text-slate-400">AI-Powered Insights</p>
             </div>
           </div>
         </motion.div>
@@ -622,12 +512,12 @@ export default function App() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.03)] focus:outline-none">
         <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 transition-transform hover:scale-105">
-              <BookOpen className="text-white w-6 h-6" />
+            <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
+              <BookOpen className="text-white w-5 h-5" />
             </div>
             <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">GabayAral</span>
-              <p className="text-[10px] uppercase tracking-widest text-emerald-600 font-bold leading-none mt-1">Insightful Learning</p>
+              <span className="text-lg font-semibold text-slate-900">GabayAral</span>
+              <p className="text-[9px] text-emerald-600 font-medium">Academic Portal</p>
             </div>
           </div>
 
@@ -645,7 +535,7 @@ export default function App() {
                 <p className="text-[10px] text-slate-500 font-semibold tracking-wide uppercase mt-1">{role} account</p>
               </div>
               <button 
-                onClick={handleLogout}
+                onClick={() => setIsAuthenticated(false)}
                 className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden transition-transform hover:rotate-3"
               >
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${role === 'teacher' ? 'teacher-8' : 'parent-2'}`} alt="Avatar" />
@@ -1040,12 +930,6 @@ export default function App() {
                     <p className="text-slate-500 font-medium">Performance Encoding & Monitoring</p>
                   </div>
                   <div className="flex gap-2">
-                    <button 
-                      onClick={() => setShowAddStudent(true)}
-                      className="px-4 py-2 bg-emerald-600 rounded-lg border border-emerald-700 text-white font-bold hover:bg-emerald-700 shadow-sm flex items-center gap-2 transition-transform active:scale-95"
-                    >
-                      <Plus className="w-4 h-4" /> Add Student
-                    </button>
                     <button className="p-2 bg-white rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm transition-transform active:scale-90">
                       <Filter className="w-5 h-5" />
                     </button>
@@ -1064,7 +948,7 @@ export default function App() {
                            <Users className="w-40 h-40" />
                         </div>
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Authenticated Students</p>
-                        <h3 className="text-4xl font-black">{students.length}</h3>
+                        <h3 className="text-4xl font-black">{MOCK_STUDENTS.length}</h3>
                         <div className="mt-8 flex items-center gap-2 text-emerald-400 text-xs font-bold">
                           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> ALL PARENTS CONNECTED
                         </div>
@@ -1099,7 +983,7 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-50">
-                            {students.slice(0, isExpandingStudents ? undefined : 5).map(student => {
+                            {MOCK_STUDENTS.slice(0, isExpandingStudents ? undefined : 5).map(student => {
                               const sGrades = grades.filter(g => g.studentId === student.id);
                               const avg = calculateAverage(sGrades);
                               return (
@@ -1152,7 +1036,7 @@ export default function App() {
                   {/* Right Side: Encoding Panel */}
                   <div className="space-y-6">
                     <GradeEncoder 
-                      students={students} 
+                      students={MOCK_STUDENTS} 
                       subjects={MOCK_SUBJECTS} 
                       onAddGrade={handleAddGrade}
                       onAddFeedback={handleAddFeedback}
@@ -1184,22 +1068,6 @@ export default function App() {
           <button className="text-[10px] font-bold text-slate-500 hover:text-white transition-colors uppercase tracking-widest">Contact IT</button>
         </div>
       </footer>
-      </main>
-
-      <AnimatePresence>
-        {successModal.show && (
-          <SuccessModal 
-            message={successModal.message} 
-            onClose={() => setSuccessModal({ show: false, message: '' })} 
-          />
-        )}
-        {showAddStudent && (
-          <AddStudentModal 
-            onAdd={handleAddStudent} 
-            onClose={() => setShowAddStudent(false)} 
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
