@@ -605,74 +605,70 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
             >
               {/* Left Column: Student Header & Overview */}
-              <div className="lg:col-span-2 space-y-12">
-                <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                   <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100">Learner Insight</span>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-semibold uppercase tracking-wider border border-emerald-100">Student View</span>
                     </div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-none mb-3 hover:text-emerald-700 transition-colors cursor-default">{currentUserStudent.name}</h1>
-                    <p className="text-slate-500 font-medium flex items-center gap-2">
-                       Grade 8 • St. Jude Section <span className="w-1.5 h-1.5 bg-slate-200 rounded-full"></span> 2nd Academic Period
+                    <h1 className="text-4xl font-bold text-slate-900 leading-tight mb-2">{currentUserStudent.name}</h1>
+                    <p className="text-slate-500 font-medium text-sm">
+                       Grade 8 • St. Jude Section
                     </p>
                   </div>
-                  <div className="flex gap-4">
-                    <div className="bg-white p-4 px-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Growth Index</span>
-                      <div className="flex items-center gap-2 text-emerald-600">
-                        <TrendingUp className="w-4 h-4" />
-                        <span className="text-2xl font-black">+{stats.growth}%</span>
+                  <div className="flex gap-3">
+                    <div className="bg-white p-3 px-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
+                      <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Growth</span>
+                      <div className="flex items-center gap-1.5 text-emerald-600">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        <span className="text-xl font-bold">+{stats.growth}%</span>
                       </div>
                     </div>
-                    <div className="bg-white p-4 px-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center min-w-[120px]">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Engage Period</span>
-                      <div className="flex items-center gap-2 text-blue-600">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-2xl font-black">W3</span>
+                    <div className="bg-white p-3 px-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
+                      <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Period</span>
+                      <div className="flex items-center gap-1.5 text-blue-600">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span className="text-xl font-bold">W3</span>
                       </div>
                     </div>
                   </div>
                 </header>
 
-                {/* Gabay AI Summary Card - Refined */}
+                {/* Gabay AI Summary Card */}
                 <motion.div 
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group border border-slate-800"
+                  className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden"
                 >
-                   <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-20 group-hover:scale-125 transition-all duration-1000">
-                    <Sparkles className="w-48 h-48 text-emerald-400" />
-                  </div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="bg-emerald-500/20 backdrop-blur-xl p-2.5 rounded-xl border border-emerald-500/30">
-                        <BrainCircuit className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400">Contextual Learning Analysis</span>
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                   <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <BrainCircuit className="w-4 h-4 text-emerald-400" />
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">AI Insights</span>
                     </div>
-                    <h2 className="text-3xl font-black mb-4">Good morning, Elena.</h2>
+                    <h2 className="text-xl font-bold mb-3">Good morning, Elena</h2>
                     {currentUserStudent.id === 'none' ? (
-                      <p className="text-lg leading-relaxed text-slate-400 mb-8 max-w-3xl font-medium">
-                        Welcome to GabayAral. Please add a student in the teacher registry and log some performance data to generate an AI insight summary.
+                      <p className="text-sm text-slate-400 mb-4">
+                        Add a student to see AI-generated insights.
                       </p>
                     ) : (
-                      <p className="text-lg leading-relaxed text-slate-400 mb-8 max-w-3xl font-medium">
-                        Based on this week's progress, <span className="text-white font-bold">{currentUserStudent.name.split(' ')[0]}</span> is currently demonstrating <span className="text-emerald-400 font-bold">strong conceptual focus</span> in Performance Tasks. We've detected a high degree of creativity in Science project logs. <span className="text-white italic">School-Home Partnership Tip:</span> Ask about the "Solar Project" today to reinforce their classroom engagement.
+                      <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+                        <span className="text-white font-semibold">{currentUserStudent.name.split(' ')[0]}</span> is showing <span className="text-emerald-400 font-semibold">strong progress</span> in Performance Tasks.
                       </p>
                     )}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 gap-3">
                       {[
                         { label: 'Retention', value: currentUserStudent.id === 'none' ? '0%' : '94%', color: 'text-emerald-400' },
                         { label: 'Participation', value: currentUserStudent.id === 'none' ? 'None' : 'High', color: 'text-blue-400' },
-                        { label: 'Focus Score', value: currentUserStudent.id === 'none' ? '0/10' : '8.8/10', color: 'text-indigo-400' },
-                        { label: 'Next Milestone', value: 'Exam Week', color: 'text-slate-100' }
+                        { label: 'Focus', value: currentUserStudent.id === 'none' ? '0/10' : '8.8/10', color: 'text-indigo-400' },
+                        { label: 'Next', value: 'Exam', color: 'text-slate-300' }
                       ].map((item, i) => (
-                        <div key={i} className="bg-white/5 backdrop-blur-xl p-5 rounded-3xl border border-white/5 hover:border-emerald-500/20 transition-colors">
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">{item.label}</p>
-                          <p className={cn("text-xl font-black", item.color)}>{item.value}</p>
+                        <div key={i} className="bg-white/5 p-3 rounded-xl">
+                          <p className="text-[8px] font-medium text-slate-400 uppercase tracking-wider mb-1">{item.label}</p>
+                          <p className={cn("text-lg font-bold", item.color)}>{item.value}</p>
                         </div>
                       ))}
                     </div>
@@ -680,55 +676,50 @@ export default function App() {
                 </motion.div>
 
                 <div>
-                  <h2 className="text-2xl font-black flex items-center gap-3 mb-8 text-slate-900 tracking-tight">
-                    <LayoutDashboard className="w-6 h-6 text-emerald-600" />
+                  <h2 className="text-lg font-bold flex items-center gap-2 mb-4 text-slate-800">
+                    <LayoutDashboard className="w-5 h-5 text-emerald-600" />
                     Growth Indicators
                   </h2>
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                     {studentAverages.map(sub => (
                       <div 
                         key={sub.id} 
                         onClick={() => setDetailedSubjectId(detailedSubjectId === sub.id ? null : sub.id)}
                         className={cn(
-                          "bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer",
+                          "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-200 hover:shadow-md transition-all cursor-pointer",
                           detailedSubjectId === sub.id && "ring-2 ring-emerald-500 border-transparent"
                         )}
                       >
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-xl font-bold text-slate-800">{sub.name}</h3>
-                            <p className="text-xs text-slate-500 font-semibold tracking-tight mt-1">Teacher: {subjects.find(s => s.id === sub.id)?.teacherId === 't1' ? 'Prof. Cruz' : 'Mr. Reyes'}</p>
+                            <h3 className="text-base font-bold text-slate-800">{sub.name}</h3>
+                            <p className="text-xs text-slate-500 mt-0.5">{subjects.find(s => s.id === sub.id)?.teacherId === 't1' ? 'Prof. Cruz' : 'Mr. Reyes'}</p>
                           </div>
-                          <span className={cn("px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tight shadow-sm border", getStatusColor(sub.average))}>
+                          <span className={cn("px-2.5 py-1 rounded-full text-[9px] font-semibold border", getStatusColor(sub.average))}>
                             {getStatusLabel(sub.average)}
                           </span>
                         </div>
                         
-                        <div className="space-y-5 flex-1">
+                        <div className="space-y-3">
                           {(['written', 'performance', 'exam'] as const).map(cat => {
                             const catGrades = studentGrades.filter(g => g.subjectId === sub.id && g.category === cat);
                             const avgValue = calculateAverage(catGrades);
                             const lastEntry = catGrades[catGrades.length - 1];
                             
                             return (
-                              <div key={cat} className="space-y-2">
-                                <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                  <span>{cat === 'written' ? 'WRITTEN WORKS' : cat === 'performance' ? 'PERFORMANCE TASKS' : 'PERIODICAL EXAMS'}</span>
-                                  <div className="flex items-center gap-2">
-                                    {lastEntry && (
-                                      <span className="text-slate-400 font-medium">Latest: {lastEntry.score}/{lastEntry.maxScore}</span>
-                                    )}
-                                    <span className="text-slate-900">{avgValue}%</span>
-                                  </div>
+                              <div key={cat}>
+                                <div className="flex justify-between text-[9px] font-medium text-slate-500 mb-1">
+                                  <span className="uppercase">{cat === 'written' ? 'Written' : cat === 'performance' ? 'Performance' : 'Exam'}</span>
+                                  <span>{avgValue}%</span>
                                 </div>
-                                <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                   <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${avgValue}%` }}
-                                    transition={{ duration: 1, ease: "easeOut" }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
                                     className={cn(
-                                      "h-full rounded-full transition-all", 
-                                      cat === 'written' ? 'bg-emerald-500' : cat === 'performance' ? 'bg-blue-500' : 'bg-emerald-600'
+                                      "h-full rounded-full", 
+                                      cat === 'written' ? 'bg-emerald-500' : cat === 'performance' ? 'bg-blue-500' : 'bg-indigo-500'
                                     )} 
                                   />
                                 </div>
@@ -736,55 +727,21 @@ export default function App() {
                             );
                           })}
                         </div>
-
-                        <div className="mt-6 pt-6 border-t border-slate-100">
-                          <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-3">Recent Performance Records</p>
-                          <div className="space-y-2">
-                            {studentGrades
-                              .filter(g => g.subjectId === sub.id)
-                              .slice(-5)
-                              .reverse() // Show newest first
-                              .map((g) => {
-                                // Calculate the count for this specific type within the category
-                                const subjectGradesOfCat = studentGrades.filter(sg => sg.subjectId === sub.id && sg.category === g.category);
-                                const itemIndex = subjectGradesOfCat.findIndex(sg => sg.id === g.id) + 1;
-                                
-                                return (
-                                  <div key={g.id} className="flex justify-between items-center group/item hover:bg-slate-50 p-2 rounded-xl transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-[11px] font-black text-slate-700">
-                                        {g.type}
-                                      </span>
-                                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">
-                                        {g.category.replace('-', ' ')} • {new Date(g.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                      </span>
-                                    </div>
-                                    <span className={cn(
-                                      "font-black text-sm px-2 py-1 rounded-lg shadow-sm border",
-                                      (g.score/g.maxScore) >= 0.85 ? "text-emerald-700 bg-emerald-50 border-emerald-100" : (g.score/g.maxScore) >= 0.75 ? "text-blue-700 bg-blue-50 border-blue-100" : "text-amber-700 bg-amber-50 border-amber-100"
-                                    )}>
-                                      {g.score}<span className="opacity-30 mx-0.5">/</span>{g.maxScore}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Grade History (Brief) */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                  <h2 className="text-xl font-bold mb-6 flex items-center justify-between">
-                    <span>Performance History</span>
-                    <select className="text-sm bg-slate-50 border-none rounded-lg py-1 px-3">
+                {/* Performance History Chart */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <h2 className="text-sm font-bold mb-4 flex items-center justify-between">
+                    <span>Performance Trend</span>
+                    <select className="text-xs bg-slate-50 border-none rounded-md py-1 px-2">
                       <option>Last 30 Days</option>
                       <option>Last 3 Months</option>
                     </select>
                   </h2>
-                  <div className="h-[300px] w-full">
+                  <div className="h-[200px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={studentGrades.slice(-10).map((g, index) => ({ 
                         name: `R${index+1}`, 
@@ -795,62 +752,56 @@ export default function App() {
                         <XAxis dataKey="name" hide />
                         <YAxis domain={[0, 100]} hide />
                         <Tooltip 
-                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                           formatter={(value: number) => [`${Math.round(value)}%`, 'Score']}
                         />
                         <Line 
                           type="monotone" 
                           dataKey="val" 
                           stroke="#10b981" 
-                          strokeWidth={4} 
-                          dot={{ r: 6, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }} 
-                          activeDot={{ r: 8 }} 
+                          strokeWidth={3} 
+                          dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }} 
+                          activeDot={{ r: 6 }} 
                         />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
-                  <p className="text-center text-slate-400 text-xs mt-4 italic">Dots represent quiz/activity results over time. Consistency is key!</p>
                 </div>
               </div>
 
               {/* Right Column: Alerts & Feedback */}
-              <div className="space-y-8">
+              <div className="space-y-5">
                 {/* Insights Panel */}
-                <section>
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                       <Bell className="w-5 h-5 text-amber-500" />
-                       Recent Insights
-                    </h3>
-                  </div>
-                  <div className="space-y-4">
+                <section className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
+                     <Bell className="w-4 h-4 text-amber-500" />
+                     Recent Insights
+                  </h3>
+                  <div className="space-y-3">
                     {alerts.filter(a => !a.isRead).length === 0 && (
-                      <p className="text-xs text-slate-400 text-center py-8 font-medium">All caught up! No new notifications.</p>
+                      <p className="text-xs text-slate-400 text-center py-4">All caught up!</p>
                     )}
                     {alerts.filter(a => !a.isRead).map(alert => (
                       <motion.div 
-                        initial={{ x: 20, opacity: 0 }}
+                        initial={{ x: 10, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         key={alert.id} 
                         onClick={() => handleMarkAlertRead(alert.id)}
                         className={cn(
-                          "p-5 rounded-2xl border flex gap-4 transition-all relative overflow-hidden cursor-pointer group hover:shadow-md",
+                          "p-3 rounded-xl border flex gap-3 cursor-pointer hover:shadow-sm transition-all",
                           alert.type === 'decline' ? "bg-amber-50 border-amber-100" : "bg-emerald-50 border-emerald-100"
                         )}
                       >
                         <div className={cn(
-                          "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm transition-transform group-hover:scale-110",
+                          "w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center",
                           alert.type === 'decline' ? "bg-white text-amber-600" : "bg-white text-emerald-600"
                         )}>
-                          {alert.type === 'decline' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                          {alert.type === 'decline' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
                         </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{alert.title}</p>
-                          <p className="text-xs text-slate-700 leading-relaxed font-semibold">{alert.message}</p>
-                          <div className="flex justify-between items-end mt-3">
-                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{new Date(alert.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                            <span className="text-[9px] font-black text-slate-800 opacity-0 group-hover:opacity-100 transition-opacity">DISMISS</span>
-                          </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] font-semibold text-slate-500 mb-0.5">{alert.title}</p>
+                          <p className="text-xs text-slate-700 leading-tight">{alert.message}</p>
+                          <p className="text-[8px] text-slate-400 mt-1">{new Date(alert.date).toLocaleDateString()}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -858,36 +809,35 @@ export default function App() {
                 </section>
 
                 {/* Teacher Feedback Panel */}
-                <section>
-                  <h3 className="font-bold text-lg flex items-center gap-2 mb-6">
-                    <MessageSquare className="w-5 h-5 text-blue-500" />
+                <section className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
+                    <MessageSquare className="w-4 h-4 text-blue-500" />
                     Educator's Feedback
                   </h3>
-                  <div className="space-y-6">
+                  <div className="space-y-3">
                     {feedback.map(fb => (
-                      <div key={fb.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative group hover:shadow-md transition-all">
-                        <div className="absolute -left-1 top-6 w-1 h-12 rounded-full bg-emerald-200 group-hover:bg-emerald-500 transition-colors" />
-                        <div className="flex justify-between items-start mb-3">
-                          <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.15em]">
+                      <div key={fb.id} className="p-3 rounded-xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-[9px] font-semibold text-emerald-600 uppercase">
                             {subjects.find(s => s.id === fb.subjectId)?.name}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-bold">{fb.date}</span>
+                          <span className="text-[9px] text-slate-400">{fb.date}</span>
                         </div>
-                        <p className="text-sm text-slate-700 leading-relaxed italic font-medium">"{fb.text}"</p>
-                        <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-                           <div className="flex items-center gap-2">
-                             <div className={cn("w-2 h-2 rounded-full", fb.sentiment === 'positive' ? "bg-emerald-500" : "bg-emerald-400")} />
-                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{fb.sentiment === 'positive' ? 'Progressive Win' : 'Developmental Focus'}</span>
+                        <p className="text-xs text-slate-700 leading-relaxed italic">"{fb.text}"</p>
+                        <div className="mt-3 pt-2 border-t border-slate-50 flex items-center justify-between">
+                           <div className="flex items-center gap-1.5">
+                             <div className={cn("w-1.5 h-1.5 rounded-full", fb.sentiment === 'positive' ? "bg-emerald-500" : "bg-amber-500")} />
+                             <span className="text-[8px] text-slate-400 uppercase">{fb.sentiment === 'positive' ? 'Positive' : 'Neutral'}</span>
                            </div>
                            <button 
                              onClick={() => handleAcknowledgeFeedback(fb.id)}
                              disabled={acknowledgedFeedbackIds.has(fb.id)}
                              className={cn(
-                               "text-[10px] font-black uppercase transition-all",
-                               acknowledgedFeedbackIds.has(fb.id) ? "text-slate-300 cursor-default" : "text-emerald-600 hover:text-emerald-800"
+                               "text-[9px] font-medium transition-all",
+                               acknowledgedFeedbackIds.has(fb.id) ? "text-slate-300" : "text-emerald-600 hover:text-emerald-800"
                              )}
                            >
-                             {acknowledgedFeedbackIds.has(fb.id) ? 'Seen by Parent' : 'Acknowledge'}
+                             {acknowledgedFeedbackIds.has(fb.id) ? 'Acknowledged' : 'Acknowledge'}
                            </button>
                         </div>
                       </div>
@@ -895,23 +845,19 @@ export default function App() {
                   </div>
                 </section>
 
-                {/* Gabay Protocol Card */}
-                <div className="bg-slate-900 px-10 py-12 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
-                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-emerald-500/20 transition-all duration-1000"></div>
-                   <div className="flex items-center gap-3 mb-6 relative z-10">
-                     <BrainCircuit className="w-5 h-5 text-emerald-400" />
-                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-400">Gabay Protocol v2.4</span>
+                {/* Info Card */}
+                <div className="bg-gradient-to-br from-indigo-600 to-purple-700 p-5 rounded-2xl text-white shadow-lg">
+                   <div className="flex items-center gap-2 mb-3">
+                     <BrainCircuit className="w-4 h-4 text-indigo-300" />
+                     <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-300">About</span>
                    </div>
-                   <h4 className="text-3xl font-black mb-4 relative z-10 tracking-tight">The Future of <br/>Collaborative Mentoring.</h4>
-                   <p className="text-sm text-slate-400 leading-relaxed mb-8 relative z-10 font-medium max-w-md">
-                     We believe academic monitoring should feel like a bridge, not a report card. GabayAral translates scores into progress stories that empower parents and support teachers.
+                   <h4 className="text-base font-bold mb-2">GabayAral</h4>
+                   <p className="text-xs text-indigo-100 leading-relaxed mb-3">
+                     Bridging academic monitoring between school and home.
                    </p>
-                   <div className="flex items-center gap-4 relative z-10">
-                     <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-black tracking-widest uppercase">
-                       <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" /> ADVOCATING PROGRESS
-                     </div>
-                     <span className="w-1 h-3 bg-slate-800 rounded-full"></span>
-                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">REAL-TIME SYNC</span>
+                   <div className="flex items-center gap-2 text-[10px] text-indigo-300">
+                     <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
+                     Real-time Sync
                    </div>
                 </div>
               </div>
