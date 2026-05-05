@@ -281,10 +281,22 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => loadFromStorage('gabay_isAuth', false));
   const [role, setRole] = useState<Role>(() => loadFromStorage('gabay_role', 'parent'));
   const [activeTeacherTab, setActiveTeacherTab] = useState('dashboard');
-  const [students, setStudents] = useState<Student[]>(() => loadFromStorage('gabay_students', MOCK_STUDENTS));
-  const [grades, setGrades] = useState<GradeEntry[]>(() => loadFromStorage('gabay_grades', MOCK_GRADES));
-  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => loadFromStorage('gabay_feedback', MOCK_FEEDBACK));
-  const [alerts, setAlerts] = useState<Alert[]>(() => loadFromStorage('gabay_alerts', MOCK_ALERTS));
+  const [students, setStudents] = useState<Student[]>(() => {
+    const stored = loadFromStorage<Student[]>('gabay_students', []);
+    return stored.length > 0 ? stored : MOCK_STUDENTS;
+  });
+  const [grades, setGrades] = useState<GradeEntry[]>(() => {
+    const stored = loadFromStorage<GradeEntry[]>('gabay_grades', []);
+    return stored.length > 0 ? stored : MOCK_GRADES;
+  });
+  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => {
+    const stored = loadFromStorage<TeacherFeedback[]>('gabay_feedback', []);
+    return stored.length > 0 ? stored : MOCK_FEEDBACK;
+  });
+  const [alerts, setAlerts] = useState<Alert[]>(() => {
+    const stored = loadFromStorage<Alert[]>('gabay_alerts', []);
+    return stored.length > 0 ? stored : MOCK_ALERTS;
+  });
   const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(() => {
     const stored = loadFromStorage<string[]>('gabay_acknowledged', []);
     return new Set(stored);
