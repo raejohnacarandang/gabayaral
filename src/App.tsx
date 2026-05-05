@@ -26,6 +26,14 @@ const calculateAverage = (grades: GradeEntry[]) => {
   return Math.round(sum / grades.length);
 };
 
+const sortByLastName = (students: Student[]) => {
+  return [...students].sort((a, b) => {
+    const lastNameA = a.name.split(' ').slice(-1)[0].toLowerCase();
+    const lastNameB = b.name.split(' ').slice(-1)[0].toLowerCase();
+    return lastNameA.localeCompare(lastNameB);
+  });
+};
+
 const getStatusColor = (average: number | null) => {
   if (average === null) return 'text-slate-400 bg-slate-50 border-slate-100';
   if (average >= 90) return 'text-emerald-700 bg-emerald-50 border-emerald-100';
@@ -138,7 +146,7 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                   value={selectedStudent}
                   onChange={(e) => setSelectedStudent(e.target.value)}
                 >
-                  {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {sortByLastName(students).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div>
@@ -148,7 +156,7 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
                 >
-                  {subjects.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {[...subjects].sort((a, b) => a.name.localeCompare(b.name)).map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
             </div>
@@ -337,7 +345,7 @@ export default function App() {
   const [isExpandingStudents, setIsExpandingStudents] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
 
-  const currentUserStudent = students[0] || { id: 'none', name: 'No Student Added', parentId: 'none', classId: 'none' };
+  const currentUserStudent = sortByLastName(students)[0] || { id: 'none', name: 'No Student Added', parentId: 'none', classId: 'none' };
   
   const studentGrades = useMemo(() => 
     grades.filter(g => g.studentId === currentUserStudent.id), 
@@ -1054,7 +1062,7 @@ export default function App() {
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                  {students.slice(0, isExpandingStudents ? undefined : 5).map(student => {
+                                  {sortByLastName(students).slice(0, isExpandingStudents ? undefined : 5).map(student => {
                                     const sGrades = grades.filter(g => g.studentId === student.id);
                                     const avg = calculateAverage(sGrades);
                                     return (
