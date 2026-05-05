@@ -303,18 +303,37 @@ const GradeEncoder = ({ students, subjects, onAddGrade, onAddFeedback }: { stude
   );
 };
 
+// --- LocalStorage Helpers ---
+
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const saveToStorage = <T,>(key: string, value: T) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn('Failed to save to localStorage', e);
+  }
+};
+
 // --- Main Application ---
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState<Role>('parent');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => loadFromStorage('gabay_isAuth', false));
+  const [role, setRole] = useState<Role>(() => loadFromStorage('gabay_role', 'parent'));
   const [activeTeacherTab, setActiveTeacherTab] = useState('dashboard');
-  const [students, setStudents] = useState<Student[]>(MOCK_STUDENTS);
-  const [subjects, setSubjects] = useState<Subject[]>(MOCK_SUBJECTS);
-  const [grades, setGrades] = useState<GradeEntry[]>(MOCK_GRADES);
-  const [feedback, setFeedback] = useState<TeacherFeedback[]>(MOCK_FEEDBACK);
-  const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
-  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(new Set());
+  const [students, setStudents] = useState<Student[]>(() => loadFromStorage('gabay_students', MOCK_STUDENTS));
+  const [subjects] = useState<Subject[]>(MOCK_SUBJECTS);
+  const [grades, setGrades] = useState<GradeEntry[]>(() => loadFromStorage('gabay_grades', MOCK_GRADES));
+  const [feedback, setFeedback] = useState<TeacherFeedback[]>(() => loadFromStorage('gabay_feedback', MOCK_FEEDBACK));
+  const [alerts, setAlerts] = useState<Alert[]>(() => loadFromStorage('gabay_alerts', MOCK_ALERTS));
+  const [acknowledgedFeedbackIds, setAcknowledgedFeedbackIds] = useState<Set<string>>(() => loadFromStorage('gabay_acknowledged', new Set<string>()));
   const [isExpandingStudents, setIsExpandingStudents] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
 
@@ -352,13 +371,21 @@ export default function App() {
       parentId: `p-${Date.now()}`,
       classId: 'c1'
     };
-    setStudents(prev => [...prev, newStudent]);
+    setStudents(prev => {
+      const updated = [...prev, newStudent];
+      saveToStorage('gabay_students', updated);
+      return updated;
+    });
     setNewStudentName('');
     setSuccessModal({ show: true, message: `${newStudent.name} has been added to the class registry.` });
   };
 
   const handleAddGrade = (newGrade: GradeEntry) => {
-    setGrades(prev => [...prev, newGrade]);
+    setGrades(prev => {
+      const updated = [...prev, newGrade];
+      saveToStorage('gabay_grades', updated);
+      return updated;
+    });
     setSuccessModal({ show: true, message: `Grade record has been posted successfully.` });
     
     // Intelligent Risk Detection (Light AI Logic)
@@ -392,17 +419,29 @@ export default function App() {
   };
 
   const handleAddFeedback = (newFb: TeacherFeedback) => {
-    setFeedback(prev => [newFb, ...prev]);
+    setFeedback(prev => {
+      const updated = [newFb, ...prev];
+      saveToStorage('gabay_feedback', updated);
+      return updated;
+    });
     setSuccessModal({ show: true, message: 'Feedback has been sent to the parent successfully.' });
   };
 
   const handleMarkAlertRead = (alertId: string) => {
-    setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, isRead: true } : a));
+    setAlerts(prev => {
+      const updated = prev.map(a => a.id === alertId ? { ...a, isRead: true } : a);
+      saveToStorage('gabay_alerts', updated);
+      return updated;
+    });
     setSuccessModal({ show: true, message: 'Insight has been dismissed.' });
   };
 
   const handleAcknowledgeFeedback = (id: string) => {
-    setAcknowledgedFeedbackIds(prev => new Set([...prev, id]));
+    setAcknowledgedFeedbackIds(prev => {
+      const updated = new Set([...prev, id]);
+      saveToStorage('gabay_acknowledged', Array.from(updated));
+      return updated;
+    });
     setSuccessModal({ show: true, message: 'Feedback acknowledged successfully.' });
   };
 
@@ -432,7 +471,7 @@ export default function App() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 text-center">Select your role to continue</p>
               <div className="grid grid-cols-2 gap-4">
                 <button 
-                  onClick={() => setRole('teacher')}
+                  onClick={() => { setRole('teacher'); saveToStorage('gabay_role', 'teacher'); }}
                   className={cn(
                     "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
                     role === 'teacher' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
@@ -442,7 +481,7 @@ export default function App() {
                   <span className="text-xs font-black uppercase tracking-tighter">Teacher</span>
                 </button>
                 <button 
-                  onClick={() => setRole('parent')}
+                  onClick={() => { setRole('parent'); saveToStorage('gabay_role', 'parent'); }}
                   className={cn(
                     "flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all",
                     role === 'parent' ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-400 grayscale hover:grayscale-0"
@@ -478,7 +517,7 @@ export default function App() {
             </div>
 
             <button 
-              onClick={() => { setIsAuthenticated(true); setSuccessModal({ show: true, message: `Welcome to GabayAral! You've logged in as ${role}.` }); }}
+              onClick={() => { setIsAuthenticated(true); saveToStorage('gabay_isAuth', true); saveToStorage('gabay_role', role); setSuccessModal({ show: true, message: `Welcome to GabayAral! You've logged in as ${role}.` }); }}
               className="w-full py-5 bg-slate-900 border-b-4 border-slate-950 hover:bg-black text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200 transition-all active:translate-y-1 active:border-b-0 text-xs"
             >
               Initialize {role === 'teacher' ? 'Faculty Portal' : 'Parental Dashboard'}
@@ -527,7 +566,7 @@ export default function App() {
                 <p className="text-[10px] text-slate-500 font-semibold tracking-wide uppercase mt-1">{role} account</p>
               </div>
               <button 
-                onClick={() => setIsAuthenticated(false)}
+                onClick={() => { setIsAuthenticated(false); saveToStorage('gabay_isAuth', false); }}
                 className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden transition-transform hover:rotate-3"
               >
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${role === 'teacher' ? 'teacher-8' : 'parent-2'}`} alt="Avatar" />
