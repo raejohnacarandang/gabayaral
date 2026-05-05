@@ -415,25 +415,33 @@ export default function App() {
       const newScorePercent = (newGrade.score / newGrade.maxScore) * 100;
       
       if (newScorePercent < prevAvg - 10) {
-        setAlerts(prev => [{
-          id: Date.now().toString(),
-          studentId: newGrade.studentId,
-          title: 'Curriculum Support Opportunity',
-          message: `Noticeable variance in ${subjects.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
-          type: 'decline',
-          date: new Date().toISOString().split('T')[0],
-          isRead: false
-        }, ...prev]);
+        setAlerts(prev => {
+          const updated = [{
+            id: Date.now().toString(),
+            studentId: newGrade.studentId,
+            title: 'Curriculum Support Opportunity',
+            message: `Noticeable variance in ${subjects.find(s => s.id === newGrade.subjectId)?.name}. A supportive review session at home might be beneficial this weekend.`,
+            type: 'decline',
+            date: new Date().toISOString().split('T')[0],
+            isRead: false
+          }, ...prev];
+          saveToStorage('gabay_alerts', updated);
+          return updated;
+        });
       } else if (newScorePercent > prevAvg + 5) {
-        setAlerts(prev => [{
-          id: Date.now().toString(),
-          studentId: newGrade.studentId,
-          title: 'Celebration Moment',
-          message: `Exceptional progress recorded in ${subjects.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
-          type: 'improvement',
-          date: new Date().toISOString().split('T')[0],
-          isRead: false
-        }, ...prev]);
+        setAlerts(prev => {
+          const updated = [{
+            id: Date.now().toString(),
+            studentId: newGrade.studentId,
+            title: 'Celebration Moment',
+            message: `Exceptional progress recorded in ${subjects.find(s => s.id === newGrade.subjectId)?.name}! High engagement detected in ${newGrade.type}.`,
+            type: 'improvement',
+            date: new Date().toISOString().split('T')[0],
+            isRead: false
+          }, ...prev];
+          saveToStorage('gabay_alerts', updated);
+          return updated;
+        });
       }
     }
   };
