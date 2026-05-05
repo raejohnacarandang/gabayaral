@@ -43,6 +43,36 @@ const getStatusLabel = (average: number | null) => {
   return 'Needs Improvement';
 };
 
+const SuccessModal = ({ message, onClose }: { message: string; onClose: () => void }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100] p-4"
+    onClick={onClose}
+  >
+    <motion.div
+      initial={{ scale: 0.9, y: 20 }}
+      animate={{ scale: 1, y: 0 }}
+      exit={{ scale: 0.9, y: 20 }}
+      className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+      </div>
+      <h3 className="text-xl font-black text-center text-slate-900 mb-2">Success!</h3>
+      <p className="text-slate-600 text-center font-medium">{message}</p>
+      <button
+        onClick={onClose}
+        className="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors"
+      >
+        Continue
+      </button>
+    </motion.div>
+  </motion.div>
+);
+
 // --- Sub-components ---
 
 const StatCard = ({ title, value, icon: Icon, colorClass }: any) => (
@@ -324,10 +354,12 @@ export default function App() {
     };
     setStudents(prev => [...prev, newStudent]);
     setNewStudentName('');
+    setSuccessModal({ show: true, message: `${newStudent.name} has been added to the class registry.` });
   };
 
   const handleAddGrade = (newGrade: GradeEntry) => {
     setGrades(prev => [...prev, newGrade]);
+    setSuccessModal({ show: true, message: `Grade record has been posted successfully.` });
     
     // Intelligent Risk Detection (Light AI Logic)
     const subGrades = grades.filter(g => g.studentId === newGrade.studentId && g.subjectId === newGrade.subjectId);
@@ -361,17 +393,21 @@ export default function App() {
 
   const handleAddFeedback = (newFb: TeacherFeedback) => {
     setFeedback(prev => [newFb, ...prev]);
+    setSuccessModal({ show: true, message: 'Feedback has been sent to the parent successfully.' });
   };
 
   const handleMarkAlertRead = (alertId: string) => {
     setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, isRead: true } : a));
+    setSuccessModal({ show: true, message: 'Insight has been dismissed.' });
   };
 
   const handleAcknowledgeFeedback = (id: string) => {
     setAcknowledgedFeedbackIds(prev => new Set([...prev, id]));
+    setSuccessModal({ show: true, message: 'Feedback acknowledged successfully.' });
   };
 
   const [detailedSubjectId, setDetailedSubjectId] = useState<string | null>(null);
+  const [successModal, setSuccessModal] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
   if (!isAuthenticated) {
     return (
@@ -442,7 +478,7 @@ export default function App() {
             </div>
 
             <button 
-              onClick={() => setIsAuthenticated(true)}
+              onClick={() => { setIsAuthenticated(true); setSuccessModal({ show: true, message: `Welcome to GabayAral! You've logged in as ${role}.` }); }}
               className="w-full py-5 bg-slate-900 border-b-4 border-slate-950 hover:bg-black text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200 transition-all active:translate-y-1 active:border-b-0 text-xs"
             >
               Initialize {role === 'teacher' ? 'Faculty Portal' : 'Parental Dashboard'}
@@ -1090,6 +1126,15 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
+
+      <AnimatePresence>
+        {successModal.show && (
+          <SuccessModal 
+            message={successModal.message} 
+            onClose={() => setSuccessModal({ show: false, message: '' })} 
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating Footer Log */}
       <footer className="mt-auto bg-slate-900 text-white px-8 py-4 flex items-center justify-between shrink-0">
